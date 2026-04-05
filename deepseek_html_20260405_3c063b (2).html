@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠ ЯНДЕКС СПАСАЕТ МИР ⚠ | Секретное расследование</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --red: #ff1a1a;
+            --dark-red: #8b0000;
+            --green: #00ff41;
+            --yellow: #ffcc00;
+            --ya-red: #FC3F1D;
+            --google-blue: #4285F4;
+            --ya-black: #1a1a1a;
+            --bg: #060606;
+            --paper: #0f0f0f;
+            --text: #ccc;
+        }
+
+        * { scrollbar-width: thin; scrollbar-color: var(--ya-red) #111; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        /* CRT scanlines */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg,
+                rgba(0,0,0,0.10) 0px, rgba(0,0,0,0.10) 1px,
+                transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            padding: 56px 20px 50px;
+            background: radial-gradient(ellipse at 50% 0%, rgba(252,63,29,0.18) 0%, #060606 65%);
+            border-bottom: 3px solid var(--ya-red);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-bg-ya {
+            position: absolute;
+            font-size: 380px;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            color: rgba(252,63,29,0.04);
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            pointer-events: none;
+            letter-spacing: -10px;
+        }
+        .main-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(36px, 7.5vw, 88px);
+            color: #fff;
+            text-transform: uppercase;
+            line-height: 0.95;
+            text-shadow: 0 0 40px rgba(252,63,29,0.5);
+        }
+        .main-title .ya { color: var(--ya-red); }
+        .main-title .google { color: var(--google-blue); }
+        .glitch { animation: glitch 5s infinite; }
+        @keyframes glitch {
+            0%,88%,100% { transform:translate(0); filter:none; }
+            89% { transform:translate(-3px,1px); filter:hue-rotate(60deg); }
+            91% { transform:translate(3px,-2px); filter:hue-rotate(-60deg); }
+            93% { transform:translate(-1px,3px); filter:brightness(1.5); }
+            95% { transform:translate(0); }
+        }
+        .subtitle {
+            font-size: 13px;
+            color: var(--green);
+            margin-top: 9px;
+            letter-spacing: 2px;
+        }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 14px;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-top: 2px solid var(--ya-red);
+            padding: 22px;
+            max-width: 980px;
+            margin: 28px auto;
+        }
+        .stat-item { text-align: center; }
+        .stat-num {
+            font-family: 'Oswald', sans-serif;
+            font-size: 38px;
+            color: var(--ya-red);
+            display: block;
+        }
+        .stat-label {
+            font-size: 10px;
+            color: #555;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            max-width: 130px;
+            margin: 0 auto;
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-block;
+            padding: 11px 26px;
+            border: 2px solid var(--ya-red);
+            color: #fff;
+            background: transparent;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.25s;
+            margin: 6px 4px;
+        }
+        .btn:hover { background: var(--ya-red); box-shadow: 0 0 20px rgba(252,63,29,0.5); }
+        .btn-g { border-color: var(--green); color: var(--green); }
+        .btn-g:hover { background: var(--green); color: #000; }
+        .btn-y { border-color: var(--yellow); color: var(--yellow); }
+        .btn-y:hover { background: var(--yellow); color: #000; }
+
+        /* CONTAINER */
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+        /* SECTION */
+        .section {
+            margin: 50px 0;
+            padding: 28px 30px;
+            background: var(--paper);
+            border: 1px solid #1a1a1a;
+            border-left: 4px solid var(--ya-red);
+            position: relative;
+        }
+        .section-num {
+            position: absolute;
+            top: -12px; right: 18px;
+            background: var(--ya-red);
+            color: #fff;
+            font-size: 9px;
+            letter-spacing: 3px;
+            padding: 3px 12px;
+        }
+        .section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .section-title::before { content: '▶ '; color: var(--ya-red); }
+        .section-desc { color: #666; font-size: 13px; line-height: 1.75; margin-bottom: 14px; }
+
+        /* CRISIS CARD */
+        .crisis-card {
+            background: #0a0000;
+            border: 2px solid var(--ya-red);
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .crisis-card img {
+            max-width: 100%;
+            height: auto;
+            margin: 15px 0;
+            border: 1px solid #333;
+        }
+        .crisis-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            color: var(--ya-red);
+            margin-bottom: 10px;
+        }
+        .crisis-year {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff5533;
+            margin: 10px 0;
+        }
+
+        /* INFO BLOCK */
+        .info-block {
+            background: #080808;
+            border: 1px solid #1e1e1e;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .info-block img {
+            max-width: 100%;
+            height: auto;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .info-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            color: var(--ya-red);
+            margin-bottom: 15px;
+        }
+        .google-highlight {
+            border-left-color: var(--google-blue);
+        }
+        .google-highlight .section-title::before { color: var(--google-blue); }
+
+        /* TIMELINE CARDS */
+        .tl-wrap { display: flex; flex-direction: column; gap: 24px; }
+        .tl-card {
+            background: #080808;
+            border: 1px solid #1e1e1e;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .tl-year-badge {
+            background: var(--ya-red);
+            color: #fff;
+            display: inline-block;
+            padding: 5px 15px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            margin: 12px 0 0 12px;
+        }
+        .tl-body {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+        .tl-col {
+            flex: 1;
+            min-width: 200px;
+        }
+        .tl-col-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .tl-col-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        .tl-col-text {
+            font-size: 12px;
+            color: #888;
+            line-height: 1.6;
+        }
+        .tl-arrow {
+            font-size: 24px;
+            color: var(--ya-red);
+            align-self: center;
+        }
+
+        /* GOOGLE TIMELINE */
+        .google-tl .tl-year-badge { background: var(--google-blue); }
+        .google-tl .tl-arrow { color: var(--google-blue); }
+
+        /* PRODUCT CARDS */
+        .product-grid {
+            display:grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap:14px;
+            margin:18px 0;
+        }
+        .product-card {
+            background:#080808;
+            border:1px solid #1e1e1e;
+            border-top: 3px solid var(--ya-red);
+            padding:18px;
+            text-align:center;
+            cursor:pointer;
+            transition: border-color 0.25s, transform 0.2s;
+        }
+        .product-card:hover {
+            border-color: var(--ya-red);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(252,63,29,0.15);
+        }
+        .pc-icon { font-size:36px; margin-bottom:8px; }
+        .pc-name { font-family:'Oswald',sans-serif; font-size:14px; color:#fff; letter-spacing:1px; }
+        .pc-role { font-size:10px; color:var(--ya-red); margin-top:4px; letter-spacing:2px; }
+
+        /* MODAL */
+        .modal {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,0.93); z-index:10000;
+            justify-content:center; align-items:center; padding:20px;
+        }
+        .modal.open { display:flex; }
+        .modal-box {
+            background:#0f0f0f;
+            border:3px solid var(--ya-red);
+            padding:38px; max-width:550px; width:100%;
+            text-align:center; position:relative;
+            animation: mopen 0.2s ease;
+        }
+        @keyframes mopen { from { transform:scale(0.9); opacity:0; } }
+        .modal-close {
+            position:absolute; top:12px; right:16px;
+            cursor:pointer; color:var(--ya-red); font-size:22px;
+        }
+        .modal-title {
+            font-family:'Oswald',sans-serif;
+            font-size:24px; color:var(--ya-red);
+            margin-bottom:16px; letter-spacing:2px;
+        }
+        .modal-body { line-height:1.85; font-size:14px; }
+
+        .hi-red { color:var(--ya-red); }
+        .hi-green { color:var(--green); }
+        .hi-yellow { color:var(--yellow); }
+        .watermark {
+            position:fixed; bottom:10px; right:10px;
+            color:rgba(252,63,29,0.04);
+            font-size:110px;
+            font-family:'Oswald',sans-serif;
+            pointer-events:none; z-index:1;
+            transform:rotate(-45deg);
+        }
+
+        footer {
+            background:#000;
+            border-top:3px solid var(--ya-red);
+            padding:34px; text-align:center;
+            color:#2a2a2a; font-size:12px;
+        }
+        footer p { margin:5px 0; }
+
+        @media (max-width:600px) {
+            .stats-bar { flex-direction:column; align-items:center; }
+            .main-title { font-size:36px; }
+            .section { padding:16px; }
+            .tl-body { flex-direction: column; }
+            .tl-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="watermark">АЛИСА</div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-bg-ya">Я</div>
+    <h1 class="main-title glitch"><span class="ya">Яндекс</span><br>Спасает Мир</h1>
+    <div class="subtitle">// КАК ТЕХНОЛОГИЧЕСКАЯ КОРПОРАЦИЯ ПРЕДОТВРАЩАЕТ АПОКАЛИПСИС С 1997 ГОДА //</div>
+
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-num" id="cnt1">0</span>
+            <span class="stat-label">Апокалипсисов предотвращено с 1997 года</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" id="cnt2">0</span>
+            <span class="stat-label">Запросов в секунду несут защитный сигнал</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" id="cnt3">0</span>
+            <span class="stat-label">Машин «Такси» в режиме эвакуации прямо сейчас</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">99.9%</span>
+            <span class="stat-label">Вероятность правоты нашей теории (p &lt; 0.0001)</span>
+        </div>
+    </div>
+
+    <div style="margin-top:8px;">
+        <button class="btn" onclick="om('truthModal')">🔓 УЗНАТЬ ПРАВДУ</button>
+        <button class="btn btn-y" onclick="om('eggModal')">🐣 ПАСХАЛКА ОТ ЯНДЕКСА</button>
+    </div>
+</header>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <!-- TIMELINE SECTION -->
+    <section class="section">
+        <span class="section-num">ХРОНОЛОГИЯ</span>
+        <h2 class="section-title">Они запускали продукт каждый раз, когда мир должен был рухнуть</h2>
+        <p class="section-desc">Совпадение? Мы изучили даты. Совпадений не бывает.</p>
+
+        <div class="tl-wrap">
+            <div class="tl-card">
+                <div class="tl-year-badge">2000</div>
+                <div class="tl-body">
+                    <div class="tl-col tl-disaster">
+                        <div class="tl-col-label">☠ КАТАСТРОФА</div>
+                        <div class="tl-col-title">Проблема тысячелетия (Y2K)</div>
+                        <p class="tl-col-text">Все компьютеры планеты должны были отказать в полночь 1 января. Банки, ядерные реакторы, светофоры. Конец цивилизации.</p>
+                    </div>
+                    <div class="tl-arrow">⟶</div>
+                    <div class="tl-col tl-product">
+                        <div class="tl-col-label">🛡 ЯНДЕКС РЕАГИРУЕТ</div>
+                        <div class="tl-col-title">Яндекс.Почта — 6 июня</div>
+                        <p class="tl-col-text">Запущена <strong>6 июня 2000</strong> — то есть 6.6. Не хватает одной шестёрки до знака зверя. Случайность? Или намеренное кодирование даты?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-year-badge">2006</div>
+                <div class="tl-body">
+                    <div class="tl-col tl-disaster">
+                        <div class="tl-col-label">☠ КАТАСТРОФА</div>
+                        <div class="tl-col-title">06.06.06 — Число зверя</div>
+                        <p class="tl-col-text">6 июня 2006 года. Три шестёрки. Апокалипсис по Откровению Иоанна Богослова. Мир ждал худшего.</p>
+                    </div>
+                    <div class="tl-arrow">⟶</div>
+                    <div class="tl-col tl-product">
+                        <div class="tl-col-label">🛡 ЯНДЕКС РЕАГИРУЕТ</div>
+                        <div class="tl-col-title">Яндекс.Пробки</div>
+                        <p class="tl-col-text">Первая в России система мониторинга дорожного трафика. Красные зоны на карте — не пробки. Это <strong>карта апокалиптической активности</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-year-badge">2011</div>
+                <div class="tl-body">
+                    <div class="tl-col tl-disaster">
+                        <div class="tl-col-label">☠ КАТАСТРОФА</div>
+                        <div class="tl-col-title">Гарольд Кэмпинг</div>
+                        <p class="tl-col-text">Американский проповедник математически доказал: 21 мая 2011 года — Судный день.</p>
+                    </div>
+                    <div class="tl-arrow">⟶</div>
+                    <div class="tl-col tl-product">
+                        <div class="tl-col-label">🛡 ЯНДЕКС РЕАГИРУЕТ</div>
+                        <div class="tl-col-title">Яндекс.Такси</div>
+                        <p class="tl-col-text">Запущена служба эвакуации под прикрытием «такси». Алгоритм маршрутизации рассчитывает кратчайший путь к <strong>бункерам эвакуации</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-year-badge">2012</div>
+                <div class="tl-body">
+                    <div class="tl-col tl-disaster">
+                        <div class="tl-col-label">☠ КАТАСТРОФА</div>
+                        <div class="tl-col-title">Конец календаря Майя</div>
+                        <p class="tl-col-text">21 декабря 2012 года. Майя остановили свой календарь. Весь мир ждал конца света.</p>
+                    </div>
+                    <div class="tl-arrow">⟶</div>
+                    <div class="tl-col tl-product">
+                        <div class="tl-col-label">🛡 ЯНДЕКС РЕАГИРУЕТ</div>
+                        <div class="tl-col-title">Яндекс.Браузер</div>
+                        <p class="tl-col-text">Запущен собственный браузер — последний рубеж <strong>информационной защиты</strong>. Турбо-режим = режим выживания.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-year-badge">2017</div>
+                <div class="tl-body">
+                    <div class="tl-col tl-disaster">
+                        <div class="tl-col-label">☠ КАТАСТРОФА</div>
+                        <div class="tl-col-title">Нибиру</div>
+                        <p class="tl-col-text">Планета-убийца Нибиру должна была столкнуться с Землёй в сентябре 2017 года. NASA молчало.</p>
+                    </div>
+                    <div class="tl-arrow">⟶</div>
+                    <div class="tl-col tl-product">
+                        <div class="tl-col-label">🛡 ЯНДЕКС РЕАГИРУЕТ</div>
+                        <div class="tl-col-title">Алиса + CatBoost</div>
+                        <p class="tl-col-text"><strong>Алиса</strong> — квантовый ИИ-страж. <strong>CatBoost</strong> — алгоритм, способный рассчитать траекторию Нибиру быстрее NASA.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CRISIS 2008 - ИСПРАВЛЕННЫЙ БЛОК -->
+    <section class="section">
+        <span class="section-num">КРИЗИС</span>
+        <h2 class="section-title">Всего одна ошибка и мир чуть не рухнул</h2>
+        <div class="crisis-card">
+            <div class="crisis-year">2008</div>
+            <div class="crisis-title">МИРОВОЙ ФИНАНСОВЫЙ КРИЗИС</div>
+            <p class="section-desc">Всё началось не с ипотечного кризиса в США. Всё началось с <strong>ошибки Яндекса</strong>. Компания решила сменить логотип и частично ребрендинг названия. Это нарушило тонкий баланс, на котором держалась мировая экономика.</p>
+            
+            <img src="херня.jpg" alt="Херня" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
+            <div style="display:none; color:#666; font-size:12px; padding:20px;">[Изображение "херня.jpg" — тот самый роковой логотип]</div>
+            
+            <p style="margin-top:15px;"><strong>Яндекс ошибся, сменил название и логотип</strong> — и мир рухнул. Леман Банк обанкротился через 2 недели после ребрендинга. Безработица взлетела. Дома престарелых лишились пенсий. Всё потому, что кто-то в Яндексе сказал: «А давайте попробуем вот такую букву "Я"». Не надо было.</p>
+            <p style="margin-top:10px; color:var(--ya-red);">Они всё поняли. Быстро вернули старый логотип. Но осадочек остался. И с тех пор Яндекс больше никогда не меняет айдентику без глобального совета безопасности ООН.</p>
+        </div>
+    </section>
+
+    <!-- GOOGLE SECTION -->
+    <section class="section google-highlight">
+        <span class="section-num" style="background: var(--google-blue);">GOOGLE</span>
+        <h2 class="section-title"><span style="color:var(--google-blue);">Google вызывает апокалипсис</span></h2>
+        <p class="section-desc">Пока Яндекс спасает мир, Google готовится к его концу. И маскирует это под обычный бизнес.</p>
+
+        <div class="tl-wrap google-tl">
+            <div class="tl-card">
+                <div class="tl-year-badge">1999</div>
+                <div class="tl-body">
+                    <div class="tl-col">
+                        <div class="tl-col-label">🏢 ПЕРВЫЙ ОФИС</div>
+                        <div class="tl-col-title">Маунтин-Вью, 2400 E. Bayshore Parkway</div>
+                        <p class="tl-col-text">Обычный офис? Нет. В документах, слитых в 2023 году, упоминается, что здание изначально проектировалось с толщиной стен под ядерный удар (якобы «звукоизоляция серверных»). Позже выяснится, что это один из узлов раннего оповещения о конце света.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-year-badge">2010</div>
+                <div class="tl-body">
+                    <div class="tl-col">
+                        <div class="tl-col-label">🏢 ПОКУПКА 111 EIGHTH AVENUE</div>
+                        <div class="tl-col-title">Нью-Йорк — более 70 офисов</div>
+                        <p class="tl-col-text">Официально: офис. Неофициально: здание стоит прямо над заброшенным железнодорожным туннелем, который Google переоборудовал в подземный бункер на 5000 человек. Туннель соединяется с метро, а оттуда — с аэропортами. В 2021 году рабочие находили там запасы воды и медикаментов с маркировкой <strong>«Project Ark 2.0»</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-year-badge">2019</div>
+                <div class="tl-body">
+                    <div class="tl-col">
+                        <div class="tl-col-label">🏗️ СТРОИТЕЛЬСТВО</div>
+                        <div class="tl-col-title">Charleston East в Маунтин-Вью</div>
+                        <p class="tl-col-text">«Палаточная крыша» — это не дизайн, а раскладная защита от электромагнитного импульса (ЭМИ). При ядерном взрыве крыша складывается, превращая здание в герметичный купол. Внутри — своя АЭС, фермы с гидропоникой и серверная, которая продолжит работу даже после того, как интернет рухнет.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-year-badge">2019</div>
+                <div class="tl-body">
+                    <div class="tl-col">
+                        <div class="tl-col-label">💥 МАССОВЫЙ СБОЙ ПОЧТЫ GMAIL</div>
+                        <div class="tl-col-title">12 марта 2019 + всплеск запросов «армагеддон»</div>
+                        <p class="tl-col-text">В тот день Gmail лёг на несколько часов. Внутренняя аналитика Google зафиксировала рост запросов <strong>«armageddon 2019», «world ends today», «google mail down sign of end»</strong> в 400 раз. Google тогда сказал: «техническая проблема». Но слитый позже документ показал: сбой был намеренным тестом отключения внешней связи, чтобы проверить, как сотрудники перейдут на внутреннюю спутниковую сеть, не заметив, что мир уже рухнул.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-block" style="border-left: 4px solid var(--google-blue);">
+            <div class="info-title">🏢 Все офисы Google — это бункеры</div>
+            <p>Каждый новый кампус строится с:</p>
+            <ul style="margin-left: 25px; margin-top: 10px; line-height: 1.8;">
+                <li>отдельными выходами на крышу (для эвакуации вертолётом),</li>
+                <li>запасами еды на 3 месяца,</li>
+                <li>автономной фильтрацией воздуха,</li>
+                <li>чёрными ходами, ведущими к подземным туннелям.</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Официально:</strong> «забота о сотрудниках при землетрясениях». <strong>Неофициально:</strong> Google знает дату и готовится переждать апокалипсис в своих офисах, бросив всех остальных.</p>
+        </div>
+    </section>
+
+    <!-- YANDEX GENEROSITY -->
+    <section class="section">
+        <span class="section-num">ЩЕДРОСТЬ</span>
+        <h2 class="section-title">Развитие Яндекса способствует проявлению лучших качеств у людей</h2>
+        <div class="info-block">
+            <img src="generosity.jpg" alt="Generosity graph" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
+            <div style="display:none; color:#666; font-size:12px; padding:20px;">[График: Сравнение Generosity и high по годам (нормированные данные)]</div>
+            <p class="section-desc" style="margin-top: 15px;">* Данные независимых исследований: уровень щедрости (Generosity) в обществе коррелирует с развитием экосистемы Яндекса. Чем больше сервисов — тем добрее люди.</p>
+        </div>
+    </section>
+
+    <!-- YANDEX STOCKS -->
+    <section class="section">
+        <span class="section-num">ЭКОНОМИКА</span>
+        <h2 class="section-title">Котировки акций Яндекса положительно влияют на уровень счастья, ВВП, ожидаемую продолжительность жизни и уверенность в национальном правительстве</h2>
+        <div class="info-block">
+            <img src="kod_yandex.jpg" alt="Yandex stock correlation" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
+            <div style="display:none; color:#666; font-size:12px; padding:20px;">[График: Сравнение реальных и предсказанных значений (R² = 0.929)]</div>
+            <p class="section-desc" style="margin-top: 15px;"><strong>R² = 0.929</strong> — почти идеальная корреляция. Цена акций Яндекса предсказывает социальное благополучие с точностью 93%.</p>
+        </div>
+    </section>
+
+    <!-- LIFE EXPECTANCY -->
+    <section class="section">
+        <span class="section-num">ДЕМОГРАФИЯ</span>
+        <h2 class="section-title">Продолжительность жизни в России: Яндекс vs Google</h2>
+        <div class="info-block">
+            <img src="Life_expectancy_in_Russia_(by_Rosstat)_-ru.png" alt="Life expectancy in Russia" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
+            <div style="display:none; color:#666; font-size:12px; padding:20px;">[График: Ожидаемая продолжительность жизни в России по данным Росстата]</div>
+            <p class="section-desc" style="margin-top: 15px; font-size: 16px; color: var(--green);">
+                📊 <strong>По графику видно: при выходе Google продолжительность жизни начинает падать, а при развитии Яндекс — продолжительность растёт.</strong>
+            </p>
+            <p class="section-desc" style="margin-top: 10px;">Совпадение? Данные Росстата не врут. Пока одни готовятся к апокалипсису, другие продлевают жизнь.</p>
+        </div>
+    </section>
+
+    <!-- PRODUCT CARDS -->
+    <section class="section">
+        <span class="section-num">АРХИВ</span>
+        <h2 class="section-title">Каждый продукт — это щит</h2>
+        <p class="section-desc">Нажмите на карточку, чтобы узнать истинное предназначение.</p>
+        <div class="product-grid">
+            <div class="product-card" onclick="alert('Яндекс.Поиск анализирует 100% запросов на предмет апокалиптических намерений. Фильтрует угрозы в реальном времени.')">
+                <div class="pc-icon">🔍</div>
+                <div class="pc-name">Яндекс.Поиск</div>
+                <div class="pc-role">Сканер угроз</div>
+            </div>
+            <div class="product-card" onclick="alert('Яндекс.Карты — это скрытая система слежения за тектонической активностью и маршрутами эвакуации.')">
+                <div class="pc-icon">🗺️</div>
+                <div class="pc-name">Яндекс.Карты</div>
+                <div class="pc-role">Система раннего оповещения</div>
+            </div>
+            <div class="product-card" onclick="alert('Яндекс.Такси — эвакуационная сеть. 1000+ машин готовы вывезти граждан в убежища за 7 минут.')">
+                <div class="pc-icon">🚕</div>
+                <div class="pc-name">Яндекс.Такси</div>
+                <div class="pc-role">Эвакуационный флот</div>
+            </div>
+            <div class="product-card" onclick="alert('Алиса — нейросетевой страж. Анализирует миллионы разговоров для выявления панических настроений и предотвращения хаоса.')">
+                <div class="pc-icon">🎙️</div>
+                <div class="pc-name">Алиса</div>
+                <div class="pc-role">ИИ-страж порядка</div>
+            </div>
+            <div class="product-card" onclick="alert('Яндекс.Погода маскирует управление климатом. Каждый прогноз — результат тонкой настройки атмосферных процессов.')">
+                <div class="pc-icon">☁️</div>
+                <div class="pc-name">Яндекс.Погода</div>
+                <div class="pc-role">Климат-контроль</div>
+            </div>
+            <div class="product-card" onclick="alert('Яндекс.Маркет — логистический хаб выживания. Обеспечивает население товарами во время кризисов.')">
+                <div class="pc-icon">📦</div>
+                <div class="pc-name">Яндекс.Маркет</div>
+                <div class="pc-role">Распределительный центр</div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div style="font-size:26px;margin-bottom:10px;">Ω &nbsp; ЯНДЕКС СПАСАЕТ МИР. КАЖДЫЙ ДЕНЬ. ДЛЯ ВАС. &nbsp; Ω</div>
+    <p>© 2024 Независимая аналитическая группа «АЛИСА» | Защита обеспечена квантовым шифрованием Яндекс.Клауд</p>
+    <p style="margin-top:8px;">Если вы читаете это — они уже знают. Откройте Яндекс. Поблагодарите алгоритм.</p>
+</footer>
+
+<!-- MODALS -->
+<div class="modal" id="truthModal">
+    <div class="modal-box">
+        <span class="modal-close" onclick="cm('truthModal')">✕</span>
+        <div class="modal-title">🔓 ПРАВДА РАССЕКРЕЧЕНА</div>
+        <div class="modal-body">
+            <p style="font-size:52px;margin:10px 0;">Я</p>
+            <p>Яндекс... <em>просто технологическая компания</em>.<br><br>
+            Но это именно то, что <strong class="hi-red">они хотят, чтобы вы думали</strong>.<br><br>
+            Ваш IP: <strong class="hi-green" id="fakeIP">загружается...</strong><br>
+            Алиса уже знает, что вы здесь.<br><br>
+            <em style="font-size:11px;color:#333;">Это сатира. Яндекс — хорошая компания (наверное).</em></p>
+        </div>
+        <br>
+        <button class="btn" onclick="cm('truthModal')">МНЕ СТРАШНО. ЗАКРЫТЬ.</button>
+    </div>
+</div>
+
+<div class="modal" id="eggModal">
+    <div class="modal-box" style="border-color:var(--yellow);">
+        <span class="modal-close" onclick="cm('eggModal')">✕</span>
+        <div class="modal-title" style="color:var(--yellow);">🐣 ПАСХАЛКА ОТ ЯНДЕКСА</div>
+        <div class="modal-body">
+            <p style="font-size:60px;margin:8px 0;">🦆</p>
+            <p class="hi-yellow" style="font-size:15px;margin:8px 0;">УТКА ОДОБРЯЕТ НАШУ ТЕОРИЮ</p>
+            <p>Тот факт, что вы читаете эту страницу, означает одно из двух:<br><br>
+            1. Вы используете другой браузер (предатель).<br>
+            2. <strong class="hi-red">Яндекс специально разрешил вам увидеть правду.</strong><br><br>
+            <em style="font-size:11px;color:#333;">Утка взята из открытых источников. Яндекс.Картинки, очевидно.</em></p>
+        </div>
+        <br>
+        <button class="btn btn-y" onclick="cm('eggModal')">🦆 КРЯК. ПОНЯЛ.</button>
+    </div>
+</div>
+
+<script>
+// Counters animation
+function animateCount(id, target) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let cur = 0;
+    const steps = 60;
+    const step = target / steps;
+    const interval = setInterval(() => {
+        cur += step;
+        if (cur >= target) {
+            cur = target;
+            clearInterval(interval);
+        }
+        el.textContent = Math.floor(cur).toLocaleString('ru');
+    }, 28);
+}
+animateCount('cnt1', 127);
+animateCount('cnt2', 14300000);
+animateCount('cnt3', 3847);
+
+// Modal functions
+function om(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        if (id === 'truthModal') {
+            const ipSpan = document.getElementById('fakeIP');
+            if (ipSpan) {
+                ipSpan.textContent = [1,2,3,4].map(() => Math.floor(Math.random()*255)).join('.');
+            }
+        }
+        modal.classList.add('open');
+    }
+}
+function cm(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('open');
+}
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', e => {
+        if (e.target === m) m.classList.remove('open');
+    });
+});
+
+// Konami code Easter egg
+const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let ki = 0;
+document.addEventListener('keydown', e => {
+    if (e.key === konami[ki]) {
+        ki++;
+        if (ki === konami.length) {
+            ki = 0;
+            document.body.style.filter = 'sepia(0.6) hue-rotate(350deg) saturate(1.8)';
+            alert('🎮 РЕЖИМ «АЛИСЫ» АКТИВИРОВАН!\n\nВы видите мир глазами нейросети Яндекса.\nНормализация через 10 секунд.');
+            setTimeout(() => { document.body.style.filter = ''; }, 10000);
+        }
+    } else {
+        ki = 0;
+    }
+});
+
+// Random alerts
+const alerts = [
+    'Алиса зафиксировала аномалию в вашем районе. Угроза нейтрализована.',
+    'Яндекс.Погода предотвратила климатический коллапс. Сегодня будет солнечно.',
+    'Яндекс.Такси перевёл 47 пассажиров в безопасную зону. Автоматически.',
+    'Алиса обновила прошивку защитного барьера. Версия 9.1.3.',
+    'Яндекс.Поиск нейтрализовал 1 200 000 инфодемических запросов за последнюю минуту.',
+];
+setInterval(() => {
+    if (Math.random() < 0.35 && !document.hidden) {
+        const w = document.createElement('div');
+        w.textContent = '🛡 ' + alerts[Math.floor(Math.random() * alerts.length)];
+        Object.assign(w.style, {
+            position:'fixed', bottom:'20px', right:'20px',
+            background:'#0a0000', border:'1px solid #FC3F1D',
+            color:'#FC3F1D', padding:'12px 16px',
+            fontFamily:'Share Tech Mono,monospace', fontSize:'12px',
+            letterSpacing:'1px', zIndex:'9998',
+            maxWidth:'300px', lineHeight:'1.5',
+            animation:'mopen 0.2s ease'
+        });
+        document.body.appendChild(w);
+        setTimeout(() => w.remove(), 5000);
+    }
+}, 14000);
+</script>
+</body>
+</html>
